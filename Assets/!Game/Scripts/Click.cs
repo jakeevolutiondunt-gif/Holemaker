@@ -113,7 +113,7 @@ public class Click : MonoBehaviour
             money -= upgradeFireRateCost;
             fireRate -= fireRateStep;
 
-            if (_fireRateNow < _fireRateCap) _fireRateNow++;
+            if (fireRate <= 0.001f) fireRate = 0.001f;
 
             upgradeFireRateCost = Mathf.RoundToInt(upgradeFireRateCost * 1.1f);
 
@@ -155,7 +155,7 @@ public class Click : MonoBehaviour
         if (successHit >= 1f) upgradeAcuracyBtnText.text = "Максимум";
         else upgradeAcuracyBtnText.text = $"увеличить шанс (-{upgradeAccuracyCost} долларов)";
 
-        if (_fireRateNow == _fireRateCap) upgradeFireRateBtnText.text = "Максимум";
+        if (fireRate == 0.001f) upgradeFireRateBtnText.text = "Максимум";
         else upgradeFireRateBtnText.text = $"увеличить скорострельность (-{upgradeFireRateCost} долларов)";
 
         if (_damageNow == _damageCap) upgradeDamageBtnText.text = "Максимум";
