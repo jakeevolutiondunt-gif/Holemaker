@@ -10,12 +10,27 @@ public class Click : MonoBehaviour
     [SerializeField] private TextMeshProUGUI fireRateText;
     [SerializeField] private TextMeshProUGUI damageText;
     [SerializeField] private TextMeshProUGUI upgradeAcuracyBtnText;
+    [SerializeField] private TextMeshProUGUI upgradeFireRateBtnText;
+    [SerializeField] private TextMeshProUGUI upgradeDamageBtnText;
 
-    [Header("Game settings")]
+    [Header("Balance")]
     [SerializeField] private int money = 0;
     [SerializeField] [Range(0f, 1f)] private float successHit = 0.2f;
+    [SerializeField] private float fireRate = 2.001f;
+    [SerializeField] private int damage = 30;
     [SerializeField] private int upgradeAccuracyCost = 50;
-    [SerializeField] private float chanceStep = 0.1f;
+    [SerializeField] private int upgradeFireRateCost = 30;
+    [SerializeField] private int upgradeDamageCost = 10;
+    [SerializeField] private float chanceStep = 0.008f;
+    [SerializeField] private float fireRateStep = 0.02f;
+
+    private int _fireRateCap = 100;
+    private int _fireRateNow = 0;
+
+    private int _damageCap = 100;
+    private int _damageNow = 0;
+
+    private float nextFireTimer = 0;
 
     private bool shot = false;
 
@@ -42,7 +57,13 @@ public class Click : MonoBehaviour
         {
             if (hit.collider.CompareTag("Player"))
             {
+                if (Time.time < nextFireTimer)
+                {
+                    Debug.Log("Слишком быстро стреляешь, давай помедленнее!");
+                    return;
+                }
                 ExecutePlayerLogic(hit.collider.gameObject);
+                nextFireTimer = Time.time + fireRate;
                 shot = false;
             }
         }
@@ -53,7 +74,7 @@ public class Click : MonoBehaviour
         shot = true;
         if (Random.value < successHit)
         {
-            money += 20;
+            money += damage;
             Debug.Log("Есть пробитие");
         }
         else
@@ -63,10 +84,52 @@ public class Click : MonoBehaviour
 
         UpdateUI();
     }
-
-    public void BuyUpgrade()
+#region Damage
+    public void BuyDamageUpgrade()
     {
-        if (money >= upgradeAccuracyCost && successHit < 1f)
+        if (money >= upgradeDamageCost && _damageNow < _damageCap)
+        {
+            money -= upgradeDamageCost;
+            damage += 5;
+
+            if (_damageNow < _damageCap) _fireRateNow++;
+
+            upgradeDamageCost += 10;
+
+            UpdateUI();
+            Debug.Log("Урон повышен!");
+        }
+        else
+        {
+            Debug.Log("Не хватает нефти! Ну или у вас максимальный урон");
+        }
+    }
+#endregion
+#region FireRate
+    public void BuyFireRateUpgrade()
+    {
+        if (money >= upgradeFireRateCost && _fireRateNow < _fireRateCap)
+        {
+            money -= upgradeFireRateCost;
+            fireRate -= fireRateStep;
+
+            if (_fireRateNow < _fireRateCap) _fireRateNow++;
+
+            upgradeFireRateCost = Mathf.RoundToInt(upgradeFireRateCost * 1.1f);
+
+            UpdateUI();
+            Debug.Log("Скорострельность повышена!");
+        }
+        else
+        {
+            Debug.Log("Не хватает нефти! Ну или у вас максимальная скорострельность");
+        }
+    }
+    #endregion
+#region Accuracy
+    public void BuyAccuracyUpgrade()
+    {
+        if (money >= upgradeAccuracyCost)
         {
             money -= upgradeAccuracyCost;
             successHit += chanceStep;
@@ -80,18 +143,23 @@ public class Click : MonoBehaviour
         }
         else
         {
-            Debug.Log("Не хватает золота! Ну или у вас максимальная точность");
+            Debug.Log("Не хватает нефти! Ну или у вас максимальная точность");
         }
     }
-
+    #endregion
+#region UpdateUI
     void UpdateUI()
     {
-        if (moneyText != null) moneyText.text = $"Доллары: {money}";
-        if (chanceText != null) chanceText.text = $"Шанс попадания: {successHit}";
-        if (upgradeAcuracyBtnText != null)
-        {
-            if (successHit >= 1f) upgradeAcuracyBtnText.text = "Максимум";
-            else upgradeAcuracyBtnText.text = $"увеличить шанс(-{upgradeAccuracyCost} долларов)";
-        }
+        moneyText.text = $"Доллары: {money}";
+        chanceText.text = $"Шанс попадания: {successHit}";
+        if (successHit >= 1f) upgradeAcuracyBtnText.text = "Максимум";
+        else upgradeAcuracyBtnText.text = $"увеличить шанс (-{upgradeAccuracyCost} долларов)";
+
+        if (_fireRateNow == _fireRateCap) upgradeFireRateBtnText.text = "Максимум";
+        else upgradeFireRateBtnText.text = $"увеличить скорострельность (-{upgradeFireRateCost} долларов)";
+
+        if (_damageNow == _damageCap) upgradeDamageBtnText.text = "Максимум";
+        else upgradeDamageBtnText.text = $"увеличить урон (-{upgradeDamageCost} долларов)";
     }
+    #endregion
 }
