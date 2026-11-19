@@ -5,6 +5,7 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class Click : MonoBehaviour
 {
+    [SerializeField] private GameObject sparkles;
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private TextMeshProUGUI chanceText;
     [SerializeField] private TextMeshProUGUI fireRateText;
@@ -59,7 +60,6 @@ public class Click : MonoBehaviour
             {
                 if (Time.time < nextFireTimer)
                 {
-                    Debug.Log("Слишком быстро стреляешь, давай помедленнее!");
                     return;
                 }
                 ExecutePlayerLogic(hit.collider.gameObject);
@@ -75,11 +75,8 @@ public class Click : MonoBehaviour
         if (Random.value < successHit)
         {
             money += damage;
-            Debug.Log("Есть пробитие");
-        }
-        else
-        {
-            Debug.Log("Не пробил");
+            Vector3 spawnPos = new Vector3(4.055f, 1.121f, -1.084f);
+            Instantiate(sparkles, spawnPos, Quaternion.identity);
         }
 
         UpdateUI();
@@ -97,11 +94,6 @@ public class Click : MonoBehaviour
             upgradeDamageCost += 10;
 
             UpdateUI();
-            Debug.Log("Урон повышен!");
-        }
-        else
-        {
-            Debug.Log("Не хватает нефти! Ну или у вас максимальный урон");
         }
     }
 #endregion
@@ -118,11 +110,6 @@ public class Click : MonoBehaviour
             upgradeFireRateCost = Mathf.RoundToInt(upgradeFireRateCost * 1.1f);
 
             UpdateUI();
-            Debug.Log("Скорострельность повышена!");
-        }
-        else
-        {
-            Debug.Log("Не хватает нефти! Ну или у вас максимальная скорострельность");
         }
     }
     #endregion
@@ -139,11 +126,6 @@ public class Click : MonoBehaviour
             upgradeAccuracyCost = Mathf.RoundToInt(upgradeAccuracyCost * 1.5f);
 
             UpdateUI();
-            Debug.Log("Шанс попадания повышен!");
-        }
-        else
-        {
-            Debug.Log("Не хватает нефти! Ну или у вас максимальная точность");
         }
     }
     #endregion

@@ -1569,6 +1569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7a7dcdda702a1b4595af5ae703ae67b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Click
+  sparkles: {fileID: 0}
   moneyText: {fileID: 975972069}
   chanceText: {fileID: 47470536}
   fireRateText: {fileID: 1602600054}
