@@ -2,10 +2,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
+using System.Collections;
 
 public class Click : MonoBehaviour
 {
     [SerializeField] private GameObject sparkles;
+    private GameObject spawnedSparkle;
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private TextMeshProUGUI chanceText;
     [SerializeField] private TextMeshProUGUI fireRateText;
@@ -24,6 +26,10 @@ public class Click : MonoBehaviour
     [SerializeField] private int upgradeDamageCost = 10;
     [SerializeField] private float chanceStep = 0.008f;
     [SerializeField] private float fireRateStep = 0.02f;
+    [SerializeField] private float flashDuration = 0.2f;
+    [SerializeField] private Renderer objRenderer;
+    [SerializeField] private Color originalColor;
+    private Coroutine flashRoutine;
 
     private int _fireRateCap = 100;
     private int _fireRateNow = 0;
@@ -32,8 +38,6 @@ public class Click : MonoBehaviour
     private int _damageNow = 0;
 
     private float nextFireTimer = 0;
-    private float sparklesTime = 0.1f;
-    private float nextSparklesTime = 0;
 
     private bool shot = false;
 
@@ -62,24 +66,15 @@ public class Click : MonoBehaviour
         {
             if (hit.collider.CompareTag("Player"))
             {
+                
                 if (Time.time < nextFireTimer)
                 {
                     return;
                 }
+                spawnedSparkle = Instantiate(sparkles, spawnPos, Quaternion.identity);
+                StartCoroutine(DoSomethingAfterDelay());
                 ExecutePlayerLogic(hit.collider.gameObject);
                 nextFireTimer = Time.time + fireRate;
-                Instantiate(sparkles, spawnPos, Quaternion.identity);
-                for (int i = 0; i < sparklesTime;)
-                {
-                    if (Time.time < sparklesTime)
-                    {
-                        nextSparklesTime = Time.time + sparklesTime;
-                    }
-                    else
-                    {
-                        Destroy(sparkles);
-                    }
-                }
                 shot = false;
             }
         }
@@ -91,6 +86,12 @@ public class Click : MonoBehaviour
         if (Random.value < successHit)
         {
             money += damage;
+            if (objRenderer == null) return;
+            if (flashRoutine != null)
+            {
+                StopCoroutine(flashRoutine);
+            }
+            flashRoutine = StartCoroutine(FlashCoroutine());
         }
 
         UpdateUI();
@@ -158,4 +159,16 @@ public class Click : MonoBehaviour
         else upgradeDamageBtnText.text = $"увеличить урон (-{upgradeDamageCost} долларов)";
     }
     #endregion
+    IEnumerator DoSomethingAfterDelay()
+    {
+        yield return new WaitForSeconds(0.1f);
+        Destroy(spawnedSparkle);
+    }
+    private IEnumerator FlashCoroutine()
+    {
+        objRenderer.material.color = Color.red;
+        yield return new WaitForSeconds(flashDuration);
+        objRenderer.material.color = originalColor;
+        flashRoutine = null;
+    }
 }
