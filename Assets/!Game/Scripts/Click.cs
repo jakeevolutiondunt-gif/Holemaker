@@ -32,8 +32,12 @@ public class Click : MonoBehaviour
     private int _damageNow = 0;
 
     private float nextFireTimer = 0;
+    private float sparklesTime = 0.1f;
+    private float nextSparklesTime = 0;
 
     private bool shot = false;
+
+    private Vector3 spawnPos = new Vector3(4.055f, 1.121f, -1.084f);
 
     private void Start()
     {
@@ -64,6 +68,18 @@ public class Click : MonoBehaviour
                 }
                 ExecutePlayerLogic(hit.collider.gameObject);
                 nextFireTimer = Time.time + fireRate;
+                Instantiate(sparkles, spawnPos, Quaternion.identity);
+                for (int i = 0; i < sparklesTime;)
+                {
+                    if (Time.time < sparklesTime)
+                    {
+                        nextSparklesTime = Time.time + sparklesTime;
+                    }
+                    else
+                    {
+                        Destroy(sparkles);
+                    }
+                }
                 shot = false;
             }
         }
@@ -75,8 +91,6 @@ public class Click : MonoBehaviour
         if (Random.value < successHit)
         {
             money += damage;
-            Vector3 spawnPos = new Vector3(4.055f, 1.121f, -1.084f);
-            Instantiate(sparkles, spawnPos, Quaternion.identity);
         }
 
         UpdateUI();

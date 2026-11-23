@@ -1477,7 +1477,7 @@ GameObject:
   - component: {fileID: 1136385245}
   - component: {fileID: 1136385244}
   m_Layer: 0
-  m_Name: Camera1
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1569,7 +1569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7a7dcdda702a1b4595af5ae703ae67b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Click
-  sparkles: {fileID: 0}
+  sparkles: {fileID: 7223117354152808138, guid: 723527d79b789f940bd17cc1ab126dc3, type: 3}
   moneyText: {fileID: 975972069}
   chanceText: {fileID: 47470536}
   fireRateText: {fileID: 1602600054}
